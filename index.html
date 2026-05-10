@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="theme-color" content="#4CAF50">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Напоминалка — Помощник</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #F0F4F8;
+            --card: #FFFFFF;
+            --primary: #2E7D32;
+            --primary-light: #E8F5E9;
+            --secondary: #1565C0;
+            --accent: #F57C00;
+            --warning: #D32F2F;
+            --text: #212121;
+            --text-light: #757575;
+            --border: #E0E0E0;
+            --radius: 16px;
+            --shadow: 0 4px 15px rgba(0,0,0,0.08);
+            --nav-height: 70px;
+            --touch-target: 56px;
+        }
+
+        [data-theme="dark"] {
+            --bg: #121212;
+            --card: #1E1E1E;
+            --primary: #4CAF50;
+            --primary-light: #2E3B2F;
+            --text: #E0E0E0;
+            --text-light: #A0A0A0;
+            --border: #333333;
+        }
+
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding-bottom: calc(var(--nav-height) + 20px);
+            transition: background 0.3s;
+            overflow-x: hidden;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .header {
+            background: var(--card);
+            padding: 16px;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo-area { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+        }
+
+        .logo-icon {
+            width: 44px; 
+            height: 44px;
+            background: linear-gradient(135deg, var(--primary), #81C784);
+            border-radius: 12px;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+        }
+
+        .logo-text h1 { 
+            font-size: 18px; 
+            font-weight: 900; 
+            color: var(--text); 
+            line-height: 1.2;
+        }
+        .logo-text span { 
+            font-size: 11px; 
+            color: var(--text-light); 
+            font-weight: 500; 
+        }
+
+        .greeting {
+            font-size: 13px; 
+            color: var(--primary); 
+            font-weight: 700;
+            background: var(--primary-light); 
+            padding: 6px 10px; 
+            border-radius: 16px;
+            white-space: nowrap;
+        }
+
+        .container { 
+            padding: 12px; 
+            max-width: 600px; 
+            margin: 0 auto; 
+        }
+
+        .card {
+            background: var(--card); 
+            border-radius: var(--radius); 
+            padding: 16px;
+            margin-bottom: 12px; 
+            box-shadow: var(--shadow); 
+            border: 1px solid var(--border);
+            transition: transform 0.2s;
+        }
+        .card:active { transform: scale(0.98); }
+
+        .card-header { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            margin-bottom: 12px; 
+        }
+        .card-icon {
+            width: 40px; 
+            height: 40px; 
+            border-radius: 10px;
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 22px;
+        }
+        .icon-green { background: var(--primary-light); color: var(--primary); }
+        .icon-blue { background: #E3F2FD; color: var(--secondary); }
+        .icon-orange { background: #FFF3E0; color: var(--accent); }
+
+        .card-title { 
+            font-size: 17px; 
+            font-weight: 800; 
+        }
+
+        .stats-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 12px; 
+            margin-bottom: 16px; 
+        }
+        .stat-card {
+            background: var(--card); 
+            padding: 16px; 
+            border-radius: var(--radius);
+            text-align: center; 
+            box-shadow: var(--shadow); 
+            border: 1px solid var(--border);
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .stat-value { 
+            font-size: 28px; 
+            font-weight: 900; 
+            color: var(--primary); 
+            line-height: 1; 
+            margin-bottom: 4px; 
+        }
+        .stat-label { 
+            font-size: 13px; 
+            color: var(--text-light); 
+            font-weight: 500; 
+        }
+
+        /* ✅ ИСПРАВЛЕНО: Добавлены все префиксы appearance */
+        .btn {
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 8px;
+            width: 100%; 
+            padding: 16px; 
+            min-height: var(--touch-target);
+            border: none; 
+            border-radius: 12px;
+            font-size: 16px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            transition: all 0.2s;
+            font-family: inherit;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+        .btn:active { 
+            transform: scale(0.96); 
+            opacity: 0.9;
+        }
+        .btn-primary { 
+            background: var(--primary); 
+            color: white; 
+            box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3); 
+        }
+        .btn-secondary { 
+            background: var(--secondary); 
+            color: white; 
+            box-shadow: 0 4px 12px rgba(21, 101, 192, 0.3); 
+        }
+        .btn-outline { 
+            background: transparent; 
+            border: 2px solid var(--primary); 
+            color: var(--primary); 
+        }
+        .btn-danger { 
+            background: #EF5350; 
+            color: white; 
+        }
+        .btn-large {
+            padding: 18px;
+            font-size: 17px;
+        }
+
+        /* ✅ ИСПРАВЛЕНО: Добавлены все префиксы appearance для инпутов */
+        input, select, textarea {
+            width: 100%; 
+            padding: 16px; 
+            min-height: 52px;
+            border: 2px solid var(--border); 
+            border-radius: 12px;
+            font-size: 18px; 
+            background: var(--bg); 
+            color: var(--text); 
+            margin-bottom: 12px;
+            outline: none; 
+            font-family: inherit;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+        input:focus, select:focus, textarea:focus { 
+            border-color: var(--primary); 
+            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+        }
+
+        .pill-item {
+            display: flex; 
+            align-items: center; 
+            padding: 14px; 
+            background: var(--bg);
+            border-radius: 12px; 
+            margin-bottom: 10px; 
+            border: 1px solid var(--border); 
+            gap: 12px;
+            min-height: 72px;
+        }
+        .pill-item.taken { 
+            opacity: 0.6; 
+            background: var(--primary-light); 
+        }
+        .pill-item.taken .pill-info span { 
+            text-decoration: line-through; 
+        }
+        .pill-time { 
+            font-size: 18px; 
+            font-weight: 800; 
+            color: var(--secondary); 
+            min-width: 56px; 
+            text-align: center; 
+        }
+        .pill-info { 
+            flex: 1; 
+            min-width: 0;
+        }
+        .pill-name { 
+            font-size: 16px; 
+            font-weight: 700; 
+            display: block; 
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .pill-dose { 
+            font-size: 14px; 
+            color: var(--text-light); 
+        }
+        .pill-btn {
+            width: 48px; 
+            height: 48px; 
+            border-radius: 50%; 
+            border: none;
+            background: white; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+            font-size: 24px;
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .pill-btn:active { 
+            transform: scale(0.9); 
+        }
+        .pill-btn.done { 
+            background: var(--primary); 
+            color: white; 
+        }
+
+        .water-visual { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            margin: 20px 0; 
+        }
+        .cup-container {
+            width: 100px; 
+            height: 140px; 
+            border: 4px solid var(--secondary);
+            border-top: none; 
+            border-radius: 0 0 16px 16px; 
+            position: relative;
+            overflow: hidden; 
+            background: rgba(21, 101, 192, 0.1);
+        }
+        .water-fill {
+            position: absolute; 
+            bottom: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 0%;
+            background: linear-gradient(to top, #1565C0, #42A5F5); 
+            transition: height 0.5s ease;
+        }
+        .water-fill::after {
+            content: ''; 
+            position: absolute; 
+            top: -5px; 
+            left: 0; 
+            width: 100%; 
+            height: 10px;
+            background: rgba(255,255,255,0.3); 
+            border-radius: 50%; 
+            animation: wave 2s infinite linear;
+        }
+        @keyframes wave { 
+            0% { transform: scaleX(1); } 
+            50% { transform: scaleX(1.1); } 
+            100% { transform: scaleX(1); } 
+        }
+        .water-info { 
+            margin-top: 12px; 
+            text-align: center; 
+        }
+        .water-count { 
+            font-size: 32px; 
+            font-weight: 900; 
+            color: var(--secondary); 
+        }
+        .water-goal { 
+            font-size: 15px; 
+            color: var(--text-light); 
+        }
+
+        .tip-card {
+            background: linear-gradient(135deg, #FFF8E1, #FFFFFF); 
+            border: 1px solid #FFE082;
+            border-radius: 12px; 
+            padding: 14px; 
+            margin-bottom: 10px; 
+            display: flex; 
+            gap: 12px; 
+            align-items: flex-start;
+        }
+        .tip-icon { 
+            font-size: 26px; 
+            flex-shrink: 0;
+        }
+        .tip-text { 
+            font-size: 15px; 
+            line-height: 1.5; 
+            color: #4E342E; 
+        }
+
+        .disclaimer-box {
+            background: #FFF3E0; 
+            border-left: 5px solid var(--accent);
+            padding: 14px; 
+            border-radius: 12px; 
+            margin-bottom: 16px;
+            font-size: 14px; 
+            color: #E65100; 
+            line-height: 1.5;
+        }
+        .search-box {
+            position: relative; 
+            margin-bottom: 16px;
+        }
+        .search-box input {
+            margin: 0; 
+            padding-left: 48px; 
+            font-size: 17px;
+            min-height: 52px;
+        }
+        .search-box::before {
+            content: '🔍'; 
+            position: absolute; 
+            left: 16px; 
+            top: 50%; 
+            transform: translateY(-50%);
+            font-size: 20px; 
+            opacity: 0.6;
+        }
+        .category-title {
+            font-size: 18px; 
+            font-weight: 800; 
+            color: var(--text);
+            margin: 16px 0 10px; 
+            padding-left: 12px; 
+            border-left: 4px solid var(--secondary);
+        }
+        .disease-card {
+            background: var(--card); 
+            border: 1px solid var(--border); 
+            border-radius: 12px;
+            padding: 14px; 
+            margin-bottom: 10px; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .disease-name { 
+            font-size: 17px; 
+            font-weight: 800; 
+            color: var(--secondary); 
+            margin-bottom: 6px; 
+        }
+        .disease-meds { 
+            font-size: 15px; 
+            color: var(--text); 
+            margin-bottom: 8px; 
+            font-weight: 500; 
+        }
+        .disease-note {
+            font-size: 14px; 
+            color: var(--text-light); 
+            background: var(--primary-light);
+            padding: 10px; 
+            border-radius: 8px; 
+            border-left: 3px solid var(--primary);
+            line-height: 1.4;
+        }
+
+        .bottom-nav {
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            right: 0; 
+            background: var(--card);
+            height: var(--nav-height); 
+            display: grid; 
+            grid-template-columns: repeat(5, 1fr);
+            border-top: 1px solid var(--border); 
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+            z-index: 100; 
+            padding-bottom: max(8px, env(safe-area-inset-bottom));
+            padding-top: 4px;
+        }
+        .nav-btn {
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center;
+            gap: 2px; 
+            border: none; 
+            background: none; 
+            color: var(--text-light);
+            font-size: 10px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            transition: color 0.2s;
+            padding: 4px;
+            min-height: var(--nav-height);
+        }
+        .nav-btn.active { 
+            color: var(--primary); 
+        }
+        .nav-btn span { 
+            font-size: 22px; 
+            margin-bottom: 2px; 
+        }
+
+        .page { 
+            display: none; 
+            animation: fadeIn 0.3s; 
+        }
+        .page.active { 
+            display: block; 
+        }
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(10px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        .modal-overlay {
+            position: fixed; 
+            inset: 0; 
+            background: rgba(0,0,0,0.7); 
+            z-index: 1000;
+            display: none; 
+            align-items: flex-end; 
+            justify-content: center;
+        }
+        .modal-overlay.open { 
+            display: flex; 
+        }
+        .modal-content {
+            background: var(--card); 
+            width: 100%; 
+            max-width: 600px; 
+            border-radius: 20px 20px 0 0;
+            padding: 20px; 
+            animation: slideUp 0.3s;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        @keyframes slideUp { 
+            from { transform: translateY(100%); } 
+            to { transform: translateY(0); } 
+        }
+        .modal-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 20px; 
+        }
+        .modal-title { 
+            font-size: 20px; 
+            font-weight: 800; 
+        }
+        .close-modal {
+            width: 44px; 
+            height: 44px; 
+            border-radius: 50%; 
+            border: none;
+            background: var(--bg); 
+            font-size: 24px; 
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (min-width: 600px) {
+            .modal-content { 
+                border-radius: 20px; 
+                margin: auto; 
+            }
+            .modal-overlay { 
+                align-items: center; 
+                padding: 20px; 
+            }
+            .bottom-nav { 
+                grid-template-columns: repeat(5, 1fr); 
+            }
+        }
+
+        @media (max-width: 360px) {
+            .logo-text h1 { font-size: 16px; }
+            .stat-value { font-size: 24px; }
+            .nav-btn span { font-size: 20px; }
+            .nav-btn { font-size: 9px; }
+            .pill-time { font-size: 16px; min-width: 50px; }
+        }
+
+        .text-center { text-align: center; }
+        .mb-2 { margin-bottom: 8px; }
+        .mb-3 { margin-bottom: 12px; }
+        .mb-4 { margin-bottom: 16px; }
+        .mt-2 { margin-top: 8px; }
+        .mt-3 { margin-top: 12px; }
+        .mt-4 { margin-top: 16px; }
+        .text-light { color: var(--text-light); }
+        .font-bold { font-weight: 700; }
+        .grid-2 { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 10px; 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="logo-area">
+            <div class="logo-icon">🏥</div>
+            <div class="logo-text">
+                <h1>Заботливый День</h1>
+                <span>Помощник для здоровья</span>
+            </div>
+        </div>
+        <div class="greeting" id="greetingText">Здравствуйте!</div>
+    </div>
+
+    <div class="container">
+
+        <!-- HOME -->
+        <div id="homePage" class="page active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="pillsTakenCount">0/0</div>
+                    <div class="stat-label">Таблетки</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="waterCountStat">0</div>
+                    <div class="stat-label">Стаканов воды</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon icon-orange">⏰</div>
+                    <div>
+                        <div class="card-title">Следующий приём</div>
+                        <div style="font-size:14px; color:var(--text-light)" id="nextPillTime">Нет назначений</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon icon-green">🌟</div>
+                    <div class="card-title">Совет дня</div>
+                </div>
+                <div id="dailyTip" style="font-size:16px; line-height:1.6; color:var(--text);">Загрузка...</div>
+            </div>
+        </div>
+
+        <!-- PILLS -->
+        <div id="pillsPage" class="page">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon icon-green">💊</div>
+                    <div class="card-title">Мои лекарства</div>
+                </div>
+                <p style="color:var(--text-light); margin-bottom:16px; font-size:15px;">Нажмите на кружок, когда выпили таблетку.</p>
+                <div id="pillsList"></div>
+                <button class="btn btn-primary btn-large mt-3" onclick="openPillModal()">
+                    <span style="font-size:20px;">+</span> Добавить лекарство
+                </button>
+            </div>
+        </div>
+
+        <!-- WATER -->
+        <div id="waterPage" class="page">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon icon-blue">💧</div>
+                    <div class="card-title">Водный баланс</div>
+                </div>
+                <div class="water-visual">
+                    <div class="cup-container"><div class="water-fill" id="waterFill"></div></div>
+                    <div class="water-info">
+                        <div class="water-count"><span id="waterGlasses">0</span> / 8</div>
+                        <div class="water-goal">Стаканов (200 мл)</div>
+                    </div>
+                </div>
+                <div class="grid-2">
+                    <button class="btn btn-secondary btn-large" onclick="addWater()">
+                        <span style="font-size:20px;">+</span> Стакан
+                    </button>
+                    <button class="btn btn-outline btn-large" onclick="resetWater()">Сбросить</button>
+                </div>
+                <div class="mt-4" style="padding-top:16px; border-top:1px solid var(--border);">
+                    <div style="font-size:16px; font-weight:700; margin-bottom:10px;">💡 Когда лучше пить:</div>
+                    <ul style="padding-left:20px; color:var(--text-light); font-size:14px; line-height:1.8;">
+                        <li>Утром натощак — запускает организм</li>
+                        <li>За 30 мин до еды — улучшает пищеварение</li>
+                        <li>Между приемами пищи — поддерживает баланс</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- REFERENCE -->
+        <div id="referencePage" class="page">
+            <div class="disclaimer-box">
+                ⚠️ <strong>Важно:</strong> Этот справочник носит информационный характер. Не занимайтесь самолечением. Дозировки и препараты должен подбирать только ваш лечащий врач.
+            </div>
+
+            <div class="search-box">
+                <input type="text" id="diseaseSearch" placeholder="Поиск болезни или лекарства..." oninput="filterDiseases()">
+            </div>
+
+            <div id="diseaseList"></div>
+
+            <div class="card mt-4">
+                <div class="card-header">
+                    <div class="card-icon icon-orange">📞</div>
+                    <div class="card-title">Экстренная помощь</div>
+                </div>
+                <p style="font-size:16px; line-height:1.8; color:var(--text);">
+                    🚑 <strong>Скорая помощь:</strong> 103 или 112<br>
+                    🏥 <strong>Поликлиника:</strong> запишитесь через регистратуру<br>
+                    💊 <strong>Аптека:</strong> уточняйте наличие у фармацевта
+                </p>
+            </div>
+        </div>
+
+        <!-- TIPS -->
+        <div id="tipsPage" class="page">
+            <div class="card-header mb-4">
+                <div class="card-icon icon-orange">🌿</div>
+                <div class="card-title">Полезные советы</div>
+            </div>
+            <div class="tip-card">
+                <div class="tip-icon">🩺</div>
+                <div class="tip-text"><strong>Давление:</strong> Измеряйте давление в одно и то же время. Записывайте результаты. Если выше 140/90 — к врачу.</div>
+            </div>
+            <div class="tip-card">
+                <div class="tip-icon">🥗</div>
+                <div class="tip-text"><strong>Питание:</strong> Больше овощей и клетчатки. Меньше соли и сахара. Ешьте 5 раз в день небольшими порциями.</div>
+            </div>
+            <div class="tip-card">
+                <div class="tip-icon">🚶‍️</div>
+                <div class="tip-text"><strong>Движение:</strong> Прогулка 30-40 минут полезна для сердца. Делайте лёгкую разминку по утрам.</div>
+            </div>
+            <div class="tip-card">
+                <div class="tip-icon">💤</div>
+                <div class="tip-text"><strong>Сон:</strong> Ложитесь до 23:00. Проветривайте комнату. Избегайте кофеина после обеда.</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- NAV -->
+    <nav class="bottom-nav">
+        <button class="nav-btn active" onclick="switchTab('home', this)">
+            <span>🏠</span>Главная
+        </button>
+        <button class="nav-btn" onclick="switchTab('pills', this)">
+            <span>💊</span>Таблетки
+        </button>
+        <button class="nav-btn" onclick="switchTab('water', this)">
+            <span>💧</span>Вода
+        </button>
+        <button class="nav-btn" onclick="switchTab('reference', this)">
+            <span>📖</span>Справочник
+        </button>
+        <button class="nav-btn" onclick="switchTab('tips', this)">
+            <span>🌿</span>Советы
+        </button>
+    </nav>
+
+    <!-- MODAL -->
+    <div class="modal-overlay" id="pillModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Новое лекарство</div>
+                <button class="close-modal" onclick="closePillModal()">✕</button>
+            </div>
+            <input type="text" id="pillNameInput" placeholder="Название (напр. Эналаприл)">
+            <input type="text" id="pillDoseInput" placeholder="Дозировка (напр. 1 таблетка)">
+            <label style="font-weight:700; margin-bottom:8px; display:block; font-size:16px;">Время приема:</label>
+            <input type="time" id="pillTimeInput" style="font-size:20px;">
+            <button class="btn btn-primary btn-large mt-3" onclick="savePill()">💾 Сохранить</button>
+            <button class="btn btn-outline btn-large mt-2" onclick="closePillModal()">Отмена</button>
+        </div>
+    </div>
+
+    <script>
+        let pills = JSON.parse(localStorage.getItem('z_pills') || '[]');
+        let waterData = JSON.parse(localStorage.getItem('z_water') || '{"count":0, "date":""}');
+        
+        const today = new Date().toDateString();
+        if (waterData.date !== today) {
+            waterData = { count: 0, date: today };
+            localStorage.setItem('z_water', JSON.stringify(waterData));
+        }
+
+        const diseasesData = [
+            {
+                category: "❤️ Сердце и сосуды",
+                items: [
+                    { name: "Гипертония", meds: "Эналаприл, Лозартан, Амлодипин, Верапамил", note: "Принимать строго по графику. Контролировать давление утром и вечером. Не пропускать приёмы." },
+                    { name: "Ишемическая болезнь сердца", meds: "Аспирин кардио, Нитроглицерин, Бисопролол, Статины", note: "Нитроглицерин — только при приступе боли под язык! Статины обычно на ночь." },
+                    { name: "Аритмия", meds: "Амиодарон, Конкор, Панангин", note: "Следить за пульсом. Панангин восполняет калий и магний." }
+                ]
+            },
+            {
+                category: "🦴 Суставы и кости",
+                items: [
+                    { name: "Остеоартроз / Артроз", meds: "Ибупрофен, Диклофенак, Мелоксикам, Хондропротекторы", note: "НПВС принимать строго после еды. Беречь желудок. Хондропротекторы пить курсами 3-6 мес." },
+                    { name: "Остеопороз", meds: "Кальций D3 Никомед, Алендронат, Стронций", note: "Алендронат пить утром натощак, стоя, запивать полным стаканом воды. Не ложиться 30 мин." },
+                    { name: "Подагра", meds: "Аллопуринол, Колхицин, Диклофенак", note: "Исключить алкоголь, красное мясо, субпродукты. Пить много воды." }
+                ]
+            },
+            {
+                category: "🫁 Дыхание и аллергии",
+                items: [
+                    { name: "Хронический бронхит / ХОБЛ", meds: "Амброксол, АЦЦ, Беродуал (ингаляции)", note: "Ингаляции делать через 1-1.5 ч после еды. Пить тёплое питьё." },
+                    { name: "Аллергия", meds: "Цетрин, Лоратадин, Супрастин, Зодак", note: "Супрастин вызывает сонливость — лучше на ночь. Новые препараты не вызывают сонливости." }
+                ]
+            },
+            {
+                category: "🧠 Нервная система и сон",
+                items: [
+                    { name: "Бессонница", meds: "Мелатонин, Валериана, Пустырник, Донормил", note: "Не сочетать с алкоголем. Соблюдать режим. Мелатонин за 30 мин до сна." },
+                    { name: "Тревожность / Невроз", meds: "Афобазол, Глицин, Тенотен, Фенибут", note: "Эффект накопительный (2-4 недели). Глицин рассасывать под языком." }
+                ]
+            },
+            {
+                category: "🍬 Сахар и обмен веществ",
+                items: [
+                    { name: "Сахарный диабет 2 типа", meds: "Метформин, Глибенкламид, Инсулин (по назначению)", note: "Метформин принимать во время или после еды. Контролировать сахар натощак." },
+                    { name: "Повышенный холестерин", meds: "Аторвастатин, Розувастатин, Омега-3", note: "Принимать вечером. Сдавать липидограмму раз в 3-6 мес." }
+                ]
+            },
+            {
+                category: "🦠 Желудок и кишечник",
+                items: [
+                    { name: "Гастрит / Изжога", meds: "Омепразол, Ренни, Гастал, Мотилиум", note: "Омепразол за 30 мин до завтрака. Ренни рассасывать при изжоге." },
+                    { name: "Запоры", meds: "Дюфалак, Гутталакс, Микролакс", note: "Пить воду, есть клетчатку. Дюфалак можно принимать длительно." }
+                ]
+            }
+        ];
+
+        function init() {
+            renderPills();
+            renderWater();
+            renderDiseases();
+            updateStats();
+            updateGreeting();
+            showRandomTip();
+            checkPillNotifications();
+            if ('Notification' in window && Notification.permission === 'default') {
+                setTimeout(() => Notification.requestPermission(), 3000);
+            }
+        }
+
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(tabId + 'Page').classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            if (navigator.vibrate) navigator.vibrate(10);
+        }
+
+        function updateGreeting() {
+            const hour = new Date().getHours();
+            let greet = 'Здравствуйте!';
+            if (hour < 12) greet = 'Доброе утро!';
+            else if (hour < 18) greet = 'Добрый день!';
+            else greet = 'Добрый вечер!';
+            document.getElementById('greetingText').textContent = greet;
+        }
+
+        function openPillModal() {
+            document.getElementById('pillModal').classList.add('open');
+            document.getElementById('pillNameInput').value = '';
+            document.getElementById('pillDoseInput').value = '';
+            const now = new Date();
+            document.getElementById('pillTimeInput').value = now.toTimeString().substring(0, 5);
+            if (navigator.vibrate) navigator.vibrate(20);
+        }
+
+        function closePillModal() { 
+            document.getElementById('pillModal').classList.remove('open'); 
+        }
+
+        function savePill() {
+            const name = document.getElementById('pillNameInput').value.trim();
+            const dose = document.getElementById('pillDoseInput').value.trim();
+            const time = document.getElementById('pillTimeInput').value;
+            if (!name || !time) { 
+                alert('Заполните название и время'); 
+                return; 
+            }
+            pills.push({ id: Date.now(), name, dose: dose || '1 шт', time, taken: false });
+            pills.sort((a, b) => a.time.localeCompare(b.time));
+            localStorage.setItem('z_pills', JSON.stringify(pills));
+            renderPills(); 
+            updateStats(); 
+            closePillModal();
+            if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
+        }
+
+        function togglePill(id) {
+            const pill = pills.find(p => p.id === id);
+            if (pill) { 
+                pill.taken = !pill.taken; 
+                localStorage.setItem('z_pills', JSON.stringify(pills)); 
+                renderPills(); 
+                updateStats();
+                if (navigator.vibrate) navigator.vibrate(pill.taken ? [50] : [20]);
+            }
+        }
+
+        function deletePill(id, event) {
+            event.stopPropagation();
+            if(confirm('Удалить лекарство?')) {
+                pills = pills.filter(p => p.id !== id);
+                localStorage.setItem('z_pills', JSON.stringify(pills));
+                renderPills(); 
+                updateStats();
+            }
+        }
+
+        function renderPills() {
+            const list = document.getElementById('pillsList');
+            list.innerHTML = '';
+            if (pills.length === 0) { 
+                list.innerHTML = '<div style="text-align:center; padding:40px 20px; color:var(--text-light); font-size:16px;">Список пуст.<br>Добавьте лекарство.</div>'; 
+                return; 
+            }
+            pills.forEach(pill => {
+                const el = document.createElement('div');
+                el.className = `pill-item ${pill.taken ? 'taken' : ''}`;
+                el.innerHTML = `
+                    <div class="pill-time">${pill.time}</div>
+                    <div class="pill-info" ondblclick="deletePill(${pill.id}, event)">
+                        <span class="pill-name">${pill.name}</span>
+                        <span class="pill-dose">${pill.dose}</span>
+                    </div>
+                    <button class="pill-btn ${pill.taken ? 'done' : ''}" onclick="togglePill(${pill.id})" aria-label="${pill.taken ? 'Отменить' : 'Отметить'}">${pill.taken ? '✓' : '💊'}</button>
+                `;
+                list.appendChild(el);
+            });
+        }
+
+        function updateStats() {
+            const taken = pills.filter(p => p.taken).length;
+            document.getElementById('pillsTakenCount').textContent = `${taken}/${pills.length}`;
+            const now = new Date();
+            const currentMinutes = now.getHours() * 60 + now.getMinutes();
+            let nextPill = pills.find(p => {
+                const [h, m] = p.time.split(':').map(Number);
+                return (h * 60 + m) > currentMinutes && !p.taken;
+            });
+            const nextEl = document.getElementById('nextPillTime');
+            nextEl.textContent = nextPill ? `${nextPill.time} — ${nextPill.name}` : 'На сегодня всё принято!';
+            nextEl.style.color = nextPill ? 'var(--accent)' : 'var(--primary)';
+            nextEl.style.fontWeight = nextPill ? '700' : '500';
+        }
+
+        function renderWater() {
+            const count = waterData.count;
+            const percent = Math.min(100, (count / 8) * 100);
+            document.getElementById('waterGlasses').textContent = count;
+            document.getElementById('waterCountStat').textContent = count;
+            document.getElementById('waterFill').style.height = `${percent}%`;
+        }
+
+        function addWater() {
+            waterData.count++;
+            localStorage.setItem('z_water', JSON.stringify(waterData));
+            renderWater(); 
+            updateStats();
+            if (navigator.vibrate) navigator.vibrate(30);
+            if (waterData.count === 8) {
+                alert('Дневная норма воды выполнена! 💧');
+                if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+            }
+        }
+
+        function resetWater() {
+            if(confirm('Сбросить счётчик?')) {
+                waterData.count = 0;
+                localStorage.setItem('z_water', JSON.stringify(waterData));
+                renderWater(); 
+                updateStats();
+            }
+        }
+
+        function renderDiseases(filter = '') {
+            const list = document.getElementById('diseaseList');
+            list.innerHTML = '';
+            const lowerFilter = filter.toLowerCase();
+            
+            diseasesData.forEach(cat => {
+                const filteredItems = cat.items.filter(item => 
+                    item.name.toLowerCase().includes(lowerFilter) || 
+                    item.meds.toLowerCase().includes(lowerFilter)
+                );
+                
+                if (filteredItems.length > 0) {
+                    const catTitle = document.createElement('div');
+                    catTitle.className = 'category-title';
+                    catTitle.textContent = cat.category;
+                    list.appendChild(catTitle);
+                    
+                    filteredItems.forEach(item => {
+                        const card = document.createElement('div');
+                        card.className = 'disease-card';
+                        card.innerHTML = `
+                            <div class="disease-name">${item.name}</div>
+                            <div class="disease-meds">💊 <strong>Препараты:</strong> ${item.meds}</div>
+                            <div class="disease-note">⚠️ ${item.note}</div>
+                        `;
+                        list.appendChild(card);
+                    });
+                }
+            });
+            
+            if (list.innerHTML === '') {
+                list.innerHTML = '<div style="text-align:center; padding:40px 20px; color:var(--text-light); font-size:16px;">Ничего не найдено.<br>Попробуйте другой запрос.</div>';
+            }
+        }
+
+        function filterDiseases() {
+            const query = document.getElementById('diseaseSearch').value;
+            renderDiseases(query);
+        }
+
+        const tips = [
+            "Пейте воду за 30 минут до еды, это поможет пищеварению.",
+            "Делайте лёгкую зарядку для шеи и спины каждые 2 часа.",
+            "Читайте при хорошем свете, делайте перерывы для глаз.",
+            "Прогулка перед сном поможет уснуть крепче.",
+            "Ешьте медленно и тщательно пережевывайте пищу.",
+            "Слушайте любимую музыку — это поднимает настроение!",
+            "Держите ноги в тепле, это важно для иммунитета.",
+            "Принимайте лекарства строго по назначению врача.",
+            "Контролируйте артериальное давление регулярно.",
+            "Больше двигайтесь — движение это жизнь!"
+        ];
+
+        function showRandomTip() {
+            document.getElementById('dailyTip').textContent = tips[Math.floor(Math.random() * tips.length)];
+        }
+
+        function checkPillNotifications() {
+            if ('Notification' in window) {
+                setInterval(() => {
+                    const now = new Date();
+                    const currentTime = now.toTimeString().substring(0, 5);
+                    pills.forEach(pill => {
+                        if (pill.time === currentTime && !pill.taken) {
+                            sendNotification('⏰ Время лекарств', `Выпить: ${pill.name} (${pill.dose})`);
+                        }
+                    });
+                    if (now.getMinutes() === 0 && now.getHours() % 2 === 0 && now.getHours() > 8 && now.getHours() < 22) {
+                         if (waterData.count < 8) sendNotification('💧 Пора выпить воды', 'Поддерживайте водный баланс!');
+                    }
+                }, 60000);
+            }
+        }
+
+        function sendNotification(title, body) {
+            if (Notification.permission === 'granted') {
+                new Notification(title, { 
+                    body,
+                    icon: '🏥',
+                    tag: 'health-reminder'
+                });
+            }
+        }
+
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+        
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+        
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+            
+            if (Math.abs(diff) > swipeThreshold) {
+                const navBtns = document.querySelectorAll('.nav-btn');
+                const activeBtn = document.querySelector('.nav-btn.active');
+                const currentIndex = Array.from(navBtns).indexOf(activeBtn);
+                
+                if (diff > 0 && currentIndex < navBtns.length - 1) {
+                    navBtns[currentIndex + 1].click();
+                } else if (diff < 0 && currentIndex > 0) {
+                    navBtns[currentIndex - 1].click();
+                }
+            }
+        }
+
+        window.addEventListener('beforeunload', (e) => {
+            if (pills.some(p => !p.taken)) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+
+        init();
+    </script>
+</body>
+</html>
